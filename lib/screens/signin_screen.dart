@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../models/signin_request.dart';
 import '../services/auth_service.dart';
+import 'ForgotPasswordPage.dart';
 import 'admin_screen.dart';
 import 'user_screen.dart';
+
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -110,6 +112,12 @@ class _SignInScreenState extends State<SignInScreen> {
                 },
                 child: Text("Don't have an account? Sign up"),
               ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPasswordPage()));
+                },
+                child: Text('Mot de passe oublié ?'),
+              )
             ],
           ),
         ),

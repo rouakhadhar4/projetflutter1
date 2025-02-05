@@ -120,6 +120,60 @@ class AuthService {
       throw Exception('Échec de la vérification du numéro de téléphone');
     }
   }
+  Future<bool> requestPasswordReset(String email) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/forgot-password'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'email': email}),
+    );
+
+    return response.statusCode == 200;
+  }
+  Future<bool> verifyResetCode(String email, String token) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/verify-code'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'email': email, 'token': token}),
+    );
+
+    return response.statusCode == 200;
+  }
+  Future<bool> resetPassword(String email, String newPassword) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/reset-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'email': email, 'newPassword': newPassword}),
+      );
+
+      if (response.statusCode == 200) {
+        return true;  // Succès de la réinitialisation
+      } else {
+        // Retourner l'erreur retournée par le backend
+        throw Exception('Erreur de réinitialisation : ${response.body}');
+      }
+    } catch (e) {
+      // Gérer les erreurs réseau ou autres erreurs
+      print('Exception lors de la réinitialisation : $e');
+      return false;
+    }
+  }
+
+
+
+
+  Future<bool> resendVerificationCode(String email) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/resend-verification-code'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'email': email}),
+    );
+
+    return response.statusCode == 200;
+  }
+
+
+
 
 
   // Vérifier si l'utilisateur est authentifié
