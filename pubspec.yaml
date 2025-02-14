@@ -29,14 +29,22 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   flutter:
+
     sdk: flutter
   http: ^0.13.4
   shared_preferences: ^2.0.11
   fluttertoast: ^8.2.1
+  connectivity_plus: ^5.0.2
+  google_fonts: ^4.0.4
+  image_picker: ^1.1.2
+  path: ^1.9.0
 
 
 
-  # The following adds the Cupertino Icons font to your application.
+
+
+
+    # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
@@ -56,6 +64,17 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+    - assets/images/1.png
+    - assets/images/2.png
+    - assets/images/home.png
+    - assets/images/services.png
+    - assets/images/team.png
+    - assets/images/promotion.png
+    - assets/images/subscriptions.png
+    - assets/images/reservations.png
+    - assets/images/faq.png
+    - assets/images/logout.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

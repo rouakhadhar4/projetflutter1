@@ -160,8 +160,6 @@ class AuthService {
   }
 
 
-
-
   Future<bool> resendVerificationCode(String email) async {
     final response = await http.post(
       Uri.parse('$baseUrl/resend-verification-code'),
@@ -173,14 +171,10 @@ class AuthService {
   }
 
 
-
-
-
   // Vérifier si l'utilisateur est authentifié
   Future<bool> isAuthenticated() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.containsKey('jwt_token');
   }
-// Vérifier si l'email existe déjà
-// Vérifier si l'email existe déjà
+
 }

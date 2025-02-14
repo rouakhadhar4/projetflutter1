@@ -18,7 +18,6 @@ class _VerifyCodePageState extends State<VerifyCodePage> {
   final List<TextEditingController> codeControllers =
   List.generate(6, (_) => TextEditingController());
   final AuthService authService = AuthService();
-
   int attemptCount = 0;
   bool canResend = true;
   late Timer resendTimer;
@@ -42,7 +41,7 @@ class _VerifyCodePageState extends State<VerifyCodePage> {
       isCodeExpired = false;
     });
 
-    resendTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (countdown > 0) {
         setState(() {
           countdown--;
@@ -50,12 +49,13 @@ class _VerifyCodePageState extends State<VerifyCodePage> {
       } else {
         setState(() {
           canResend = true;
-          isCodeExpired = true; // Le code devient invalide après expiration
+          isCodeExpired = true;
         });
         resendTimer.cancel();
       }
     });
   }
+
   void resendCode() async {
     if (attemptCount < 3 && canResend) {
       bool codeSent = await authService.resendVerificationCode(widget.email);
@@ -70,12 +70,12 @@ class _VerifyCodePageState extends State<VerifyCodePage> {
         startResendTimer();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Erreur lors de l'envoi du code.'")),
+          const SnackBar(content: Text("Erreur lors de l'envoi du code.")),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Vous avez atteint le nombre de tentatives. Veuillez répéter le processus.')),
+        const SnackBar(content: Text('Vous avez atteint le nombre de tentatives. Veuillez répéter le processus.')),
       );
       Navigator.pushReplacement(
         context,
@@ -83,6 +83,7 @@ class _VerifyCodePageState extends State<VerifyCodePage> {
       );
     }
   }
+
   @override
   void dispose() {
     resendTimer.cancel();
@@ -92,37 +93,77 @@ class _VerifyCodePageState extends State<VerifyCodePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Vérifier le code')),
+      backgroundColor: Colors.white, // Fond général blanc
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: codeControllers
-                  .map((controller) => _buildCodeTextField(controller))
-                  .toList(),
+            const Text(
+              'Entrez le code de confirmation',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 8),
+            const Text(
+              'Entrez le code à 6 chiffres',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(6, (index) {
+                return SizedBox(
+                  width: 40,
+                  child: TextField(
+                    controller: codeControllers[index],
+                    onChanged: (value) {
+                      if (value.isNotEmpty && index < 5) {
+                        FocusScope.of(context).nextFocus();
+                      }
+                    },
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    maxLength: 1,
+                    decoration: InputDecoration(
+                      counterText: '',
+                      filled: true,
+                      fillColor: Colors.grey[200], // Garde la même couleur des cases
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ),
+            const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () async {
                 if (isCodeExpired) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Le code est expiré. Veuillez en demander un nouveau.')),
+                    const SnackBar(content: Text('Le code est expiré. Veuillez en demander un nouveau.')),
                   );
                   return;
                 }
-
                 if (!isCodeValid()) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Veuillez entrer le code complet.')),
+                    const SnackBar(content: Text('Veuillez entrer le code complet.')),
                   );
                   return;
                 }
-
                 String fullCode = codeControllers.map((c) => c.text).join();
                 bool success = await authService.verifyResetCode(widget.email, fullCode);
-
                 if (success) {
                   Navigator.push(
                     context,
@@ -135,37 +176,32 @@ class _VerifyCodePageState extends State<VerifyCodePage> {
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Code invalide. Veuillez réessayer.')),
+                    const SnackBar(content: Text('Code invalide. Veuillez réessayer.')),
                   );
                 }
               },
-              child: Text('Vérifier le code'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF00BCD0),
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              child: const Text('Vérifier le code', style: TextStyle(color: Colors.white)),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 13),
             ElevatedButton(
               onPressed: canResend ? resendCode : null,
-              child: Text(canResend ? 'Renvoyer le code' : 'Réessayez dans $countdown sec'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF999EA1),
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              child: Text(
+                canResend ? 'Renvoyer le code' : 'Réessayez dans $countdown sec',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
             ),
+            const SizedBox(height: 16),
           ],
         ),
       ),
     );
   }
-
-  Widget _buildCodeTextField(TextEditingController controller) {
-    return SizedBox(
-      width: 50,
-      child: TextField(
-        controller: controller,
-        textAlign: TextAlign.center,
-        keyboardType: TextInputType.number,
-        maxLength: 1,
-        decoration: InputDecoration(
-          counterText: '',
-          border: OutlineInputBorder(),
-        ),
-      ),
-    );
-  }
 }
-

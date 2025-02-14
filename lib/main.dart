@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:projectlavage/screens/MyHomePage.dart';
 import 'package:projectlavage/screens/signin_screen.dart';
 import 'package:projectlavage/screens/signup_screen.dart';
 
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SignInScreen(), // Page d'accueil (connexion)
+      home: MyHomePage(), // Page d'accueil (connexion)
       routes: {
         '/signup': (context) => SignUpScreen(), // Route vers la page d'inscription
         '/signin': (context) => SignInScreen(), // Route vers la page de connexion
