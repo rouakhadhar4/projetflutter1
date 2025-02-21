@@ -8,6 +8,16 @@ import '../models/signup_request.dart';
 class AuthService {
   static const String baseUrl = 'http://10.0.2.2:8085/api/v1/auth';
 
+  static Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('jwt_token');
+  }
+
+  static Future<void> setToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('jwt_token', token);
+  }
+
   // Inscription
   Future<bool> signUp(SignUpRequest signUpRequest) async {
     final response = await http.post(
@@ -57,8 +67,17 @@ class AuthService {
       );
 
       if (adminResponse.statusCode == 200) {
-        // Si la réponse est 200, cela signifie que l'utilisateur est un admin
         return 'ADMIN';
+      }
+
+      // Vérification pour le technicien
+      final technicianResponse = await http.get(
+        Uri.parse('$baseUrl/Technicien'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (technicianResponse.statusCode == 200) {
+        return 'TECHNICIEN';
       }
 
       // Vérification pour l'utilisateur
@@ -68,13 +87,13 @@ class AuthService {
       );
 
       if (userResponse.statusCode == 200) {
-        // Si la réponse est 200, cela signifie que l'utilisateur est un user
         return 'USER';
       }
     }
 
     return 'UNKNOWN'; // Si le token est invalide ou aucun rôle n'est trouvé
   }
+
 
   Future<void> signOut() async {
     final prefs = await SharedPreferences.getInstance();
@@ -176,5 +195,83 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.containsKey('jwt_token');
   }
+  Future<Map<String, dynamic>?> getUserProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token');
+
+    if (token == null) {
+      return null; // Aucun token stocké, donc pas d'utilisateur connecté
+    }
+
+    final response = await http.get(
+      Uri.parse('http://10.0.2.2:8085/api/v1/auth/user/profile'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      return null;
+    }
+  }
+
+  Future<bool> updateProfile(String username, String email, String phone,
+      String oldPassword, String newPassword) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token');
+
+    if (token == null) {
+      return false; // Aucun token disponible
+    }
+
+    // Construire le corps de la requête dynamiquement
+    Map<String, dynamic> body = {
+      'username': username,
+      'email': email,
+      'phone': phone,
+    };
+
+    // Ajouter les mots de passe seulement s'ils sont remplis
+    if (oldPassword.isNotEmpty && newPassword.isNotEmpty) {
+      body['oldPassword'] = oldPassword;
+      body['newPassword'] = newPassword;
+    }
+
+    final response = await http.put(
+      Uri.parse('http://10.0.2.2:8085/api/v1/auth/user/update-profile'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(body),
+    );
+
+    return response.statusCode == 200;
+  }
+  // Nouvelle fonction pour récupérer les utilisateurs avec le rôle USER
+  Future<List<Map<String, dynamic>>?> getUsersWithUserRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token');
+
+    if (token == null) {
+      return null; // Aucun token stocké, donc pas d'utilisateur connecté
+    }
+
+    final response = await http.get(
+      Uri.parse('http://10.0.2.2:8085/api/v1/auth/admin/users-role-user'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      // Retourner la liste des utilisateurs au format JSON
+      final List<dynamic> responseData = json.decode(response.body);
+      return List<Map<String, dynamic>>.from(responseData);
+    } else {
+      return null; // Si la requête échoue
+    }
+  }
+
+
+
 
 }

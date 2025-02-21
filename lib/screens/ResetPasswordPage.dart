@@ -8,6 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 class ResetPasswordPage extends StatefulWidget {
   final String email;
   final String oldPassword;
+  // Initialement, le mot de passe est masqué
+
 
   const ResetPasswordPage({Key? key, required this.email, required this.oldPassword}) : super(key: key);
 
@@ -20,6 +22,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final TextEditingController _confirmPasswordController = TextEditingController();
   final AuthService _authService = AuthService();
   final _formKey = GlobalKey<FormState>();
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false; // Initialement, le mot de passe est masqué
+// Initialement, le mot de passe est masqué
+
 
   void _showConfirmSignUpDialog() {
     showDialog(
@@ -127,6 +133,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        title: Text(
+          'Modifier Mot de passe',
+          style: TextStyle(
+            fontSize: 22,  // Taille de la police
+            fontWeight: FontWeight.bold,  // Poids de la police (gras)
+          ),
+        ),
+
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -141,20 +155,27 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Modifier Mot de passe',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
               const SizedBox(height: 32),
               TextFormField(
                 controller: _passwordController,
-                obscureText: true,
+                obscureText: !_isPasswordVisible, // Le mot de passe est masqué si `obscureText` est true
                 decoration: InputDecoration(
                   hintText: 'Nouveau Mot de passe',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   filled: true,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      color: Color(0xFF00BCD0), // Vous pouvez changer la couleur ici
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible; // Inverse la visibilité
+                      });
+                    },
+                  ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -167,16 +188,28 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   return null;
                 },
               ),
+
               const SizedBox(height: 16),
               TextFormField(
                 controller: _confirmPasswordController,
-                obscureText: true,
+                obscureText: !_isConfirmPasswordVisible, // Le mot de passe est masqué si `obscureText` est true
                 decoration: InputDecoration(
                   hintText: 'Confirmer nouveau Mot de passe',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   filled: true,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      color: Color(0xFF00BCD0), // Vous pouvez changer la couleur ici
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible; // Inverse la visibilité
+                      });
+                    },
+                  ),
                 ),
                 validator: (value) {
                   if (value != _passwordController.text) {
@@ -185,6 +218,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   return null;
                 },
               ),
+
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () async {

@@ -24,6 +24,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _isConfirmPasswordVisible = false;
 
 
+
   void _showToast(String message, {Color? color}) {
     Fluttertoast.showToast(
       msg: message,
@@ -150,10 +151,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 children: [
                   const SizedBox(height: 40),
                   Text(
-                    'S\'inscrire',
-                    style: GoogleFonts.rochester(
-                      fontSize: 64,
-                      color: const Color(0xFF00BCD0),
+                    'S’inscrire',
+                    style: GoogleFonts.robotoFlex(
+                      fontSize: 48,
+                      color: Color(0xFF00BCD0),
+                      fontWeight: FontWeight.normal, // Assure que le texte n'est pas en gras
+                      letterSpacing: 1.2, // Optionnel pour améliorer la lisibilité
                     ),
                   ),
                   const SizedBox(height: 40),
@@ -197,6 +200,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       _isConfirmPasswordVisible = isVisible;
                     });
                   }, _confirmPasswordController, isConfirmPassword: true),
+
                   const SizedBox(height: 24),
                   SizedBox(
                     width: double.infinity,
@@ -348,7 +352,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         suffixIcon: IconButton(
           icon: Icon(
             isVisible ? Icons.visibility : Icons.visibility_off,
-            color: Colors.grey,
+            color: Color(0xFF00BCD0),
           ),
           onPressed: () => onVisibilityToggle(!isVisible),
         ),

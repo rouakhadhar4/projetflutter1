@@ -4,14 +4,26 @@ import 'package:projectlavage/screens/signin_screen.dart'; // Assurez-vous que v
 import 'package:projectlavage/services/auth_service.dart';
 
 
+import '../models/user.dart';
 import 'AbonnementPage.dart';
 import 'AddAbonnementPage.dart';
+import 'AddEquipeScreen.dart';
 import 'AddServicePage.dart';
 import '../models/service.dart';
+
+
+
+
+import 'EditProfilePageAdmin.dart';
+import 'EditProfilePageTechnicien.dart';
+import 'ListeAvisPage.dart';
 import 'ServicePage.dart';
 import 'UpdateAbonnementPage.dart';
 import 'UpdateServicePage.dart';
-import '../models/abonnement.dart';
+
+import 'EquipeListScreen.dart';
+import 'editEquipeScreen.dart';
+import 'ListeUsers.dart';
 
 void main() => runApp(MyApp());
 
@@ -27,7 +39,14 @@ class MyApp extends StatelessWidget {
         '/UpdateServicePage': (context) => UpdateServicePage(service: ModalRoute.of(context)!.settings.arguments as Service),
         '/AddAbonnementPage': (context) => AddAbonnementPage(),
         '/UpdateAbonnementPage': (context) => UpdateAbonnementPage(abonnement: ModalRoute.of(context)!.settings.arguments as Abonnement),
-        '/AbonnementPage': (context) => AbonnementPage()
+        '/AbonnementPage': (context) => AbonnementPage(),
+        '/AddEquipeScreen': (context) => AddEquipeScreen(),
+        '/EditEquipeScreen': (context) => EditEquipeScreen(user: ModalRoute.of(context)!.settings.arguments as User ),
+        '/EquipeListScreen': (context) => EquipeListScreen(),
+        '/EditProfilePageAdmin': (context) => EditProfilePageAdmin(),
+        '/ListeUsers': (context) => ListeUsers(),
+        '/ListeAvisPage': (context) => ListeAvisPage()
+
 
 
 
@@ -43,6 +62,7 @@ class AdminScreen extends StatefulWidget {
 
 class _AdminScreenState extends State<AdminScreen> {
   int _selectedPageIndex = 0;
+
 
   // Instance du service AuthService
   final AuthService authService = AuthService();
@@ -87,6 +107,7 @@ class Sidebar extends StatelessWidget {
   final AuthService authService;
   final Function(int) onSelectPage;
 
+
   Sidebar({required this.authService, required this.onSelectPage});
 
   @override
@@ -127,15 +148,20 @@ class Sidebar extends StatelessWidget {
             _buildDrawerItem(
                 context, 'assets/images/services.png', 'Services', 1),
             _buildDrawerItem(context, 'assets/images/team.png', 'Equipe', 2),
+            _buildDrawerItem(context, 'assets/images/user.png', 'Utilisateurs', 3),
+            _buildDrawerItem(context, 'assets/images/avis-client.png', 'Avis', 4),
             _buildDrawerItem(
-                context, 'assets/images/promotion.png', 'Promotion', 3),
+                context, 'assets/images/promotion.png', 'Promotion', 5),
             _buildDrawerItem(
-                context, 'assets/images/subscriptions.png', 'Abonnements', 4),
+                context, 'assets/images/subscriptions.png', 'Abonnements', 6),
             _buildDrawerItem(
-                context, 'assets/images/reservations.png', 'Réservations', 5),
-            _buildDrawerItem(context, 'assets/images/faq.png', 'FAQ', 6),
+                context, 'assets/images/reservations.png', 'Réservations', 7),
+            _buildDrawerItem(context, 'assets/images/faq.png', 'FAQ', 8),
+
             _buildDrawerItem(
-                context, 'assets/images/logout.png', 'Se déconnecter', 7),
+                context, 'assets/images/profile.png', 'Profile', 9),
+            _buildDrawerItem(
+                context, 'assets/images/logout.png', 'Se déconnecter', 10),
           ],
         ),
       ),
@@ -154,33 +180,58 @@ class Sidebar extends StatelessWidget {
         title,
         style: TextStyle(fontSize: 16),
       ),
-      onTap: () async {
-        if (index == 7) {
-          // Déconnexion si 'Se déconnecter' est sélectionné
-          await authService.signOut();
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => SignInScreen()), // Page de connexion
-          );
-        } else if (index == 1) {
-          // Si 'Services' est sélectionné, naviguer vers AddServicePage
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ServicePage()),
-          );
-        } else if (index == 4) {
-          // Si index est 4, naviguer vers TargetPage
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AbonnementPage()), // Remplacez TargetPage par votre page
-          );
-        } else {
-          Navigator.pop(context); // Ferme le drawer
-          onSelectPage(index);
+        onTap: () async {
+          if (index == 10) {
+            // Déconnexion si 'Se déconnecter' est sélectionné
+            await authService.signOut();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => SignInScreen()), // Page de connexion
+            );
+          } else if (index == 1) {
+            // Si 'Services' est sélectionné, naviguer vers AddServicePage
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ServicePage()),
+            );
+          } else if (index == 6) {
+            // Si index est 5, naviguer vers AbonnementPage
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AbonnementPage()),
+            );
+          } else if (index == 2) {
+            // Si index est 2, naviguer vers EquipeListScreen
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EquipeListScreen()),
+            );
+          } else if (index == 9) {
+            // Si index est 8, naviguer vers EditProfilePageAdmin
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EditProfilePageAdmin()),
+            );
+          } else if (index == 3) {
+            // Si index est 3, naviguer vers ListeUsers
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ListeUsers()), // Remplace par la page souhaitée
+            );
+          } else if (index == 4) {
+            // Nouvelle condition pour index == 4
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ListeAvisPage()), // Remplacez NouvellePage par la page appropriée
+            );
+          } else {
+            // Si aucun des autres index ne correspond, fermer le drawer et sélectionner la page
+            Navigator.pop(context);
+            onSelectPage(index);
+          }
         }
 
-      },
+
     );
   }
 }

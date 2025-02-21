@@ -33,11 +33,13 @@ dependencies:
     sdk: flutter
   http: ^0.13.4
   shared_preferences: ^2.0.11
+  jwt_decoder: ^2.0.1
   fluttertoast: ^8.2.1
   connectivity_plus: ^5.0.2
   google_fonts: ^4.0.4
   image_picker: ^1.1.2
   path: ^1.9.0
+  font_awesome_flutter: ^10.6.0
 
 
 
@@ -75,6 +77,12 @@ flutter:
     - assets/images/reservations.png
     - assets/images/faq.png
     - assets/images/logout.png
+    - assets/images/notifications.png
+    - assets/images/edit_profile.png
+    -  assets/images/profile.png
+    - assets/images/image.jpeg
+    - assets/images/user.png
+    - assets/images/avis-client.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

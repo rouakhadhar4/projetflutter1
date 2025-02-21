@@ -270,7 +270,9 @@ class _AbonnementPageState extends State<AbonnementPage> {
                                     Icon(Icons.attach_money, size: 20, color: Colors.red),
                                     SizedBox(width: 8),
                                     Text(
-                                      "${abonnement.prix.toStringAsFixed(2)} DT",
+                                      abonnement.prix == abonnement.prix.toInt()
+                                          ? '${abonnement.prix.toInt()} DT'
+                                          : '${abonnement.prix.toStringAsFixed(2)} DT',
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500,

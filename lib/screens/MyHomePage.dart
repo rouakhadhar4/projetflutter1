@@ -38,9 +38,9 @@ class MyHomePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/images/1.png',
-                  width: 450,
-                  height: 272,
+                  'assets/images/image.jpeg',
+                  width: 500,
+                  height: 240,
                 ),
                 SizedBox(height: 20),
                 Text(

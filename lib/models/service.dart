@@ -15,6 +15,7 @@ class Service {
     required this.duree,
     this.imageName,
     required this.imageUrl,
+
   });
 
   // Convertir en format JSON

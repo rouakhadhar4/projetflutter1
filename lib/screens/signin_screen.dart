@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:projectlavage/screens/signup_screen.dart';
 import 'ForgotPasswordPage.dart';
+import 'TechnicienDashboard.dart';
 import 'admin_screen.dart';
 import 'user_screen.dart';
 import '../models/signin_request.dart';
@@ -20,6 +21,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
   bool _loading = false;
+  bool _isObscured = true;
 
   void _showToast(String message, {Color? color}) {
     Fluttertoast.showToast(
@@ -58,23 +60,36 @@ class _SignInScreenState extends State<SignInScreen> {
         if (token != null) {
           String role = await _authService.checkUserRole();
           if (role == 'ADMIN') {
-            _showToast('Welcome Admin!', color: Colors.green);
+            _showToast('Welcome Admin ${_emailController.text}!',color: Color(0xFF00BCD0),
+            );
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => AdminScreen()),
             );
-          } else {
-            _showToast('Welcome ${_emailController.text}!', color: Colors.green);
+          }else if (role == 'TECHNICIEN') {
+            _showToast('Welcome Technician ${_emailController.text}!', color: Color(0xFF00BCD0));
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TechnicienDashboard(),
+              ),
+            );
+          }
+          else if (role == 'USER') {
+            _showToast('Welcome ${_emailController.text}!', color: Color(0xFF00BCD0));
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => UserScreen(username: _emailController.text),
               ),
             );
+          } else {
+            _showToast('Invalid role', color: Colors.red);
           }
         } else {
           _showToast('Invalid email or password', color: Colors.red);
         }
+
       }
     }
   }
@@ -93,10 +108,13 @@ class _SignInScreenState extends State<SignInScreen> {
                 SizedBox(height: 80),
                 Text(
                   'Connexion',
-                  style: GoogleFonts.rochester(
-                    fontSize: 64,
+                  style: GoogleFonts.robotoFlex(
+                    fontSize: 48,
                     color: Color(0xFF00BCD0),
+                    fontWeight: FontWeight.normal, // Assure que le texte n'est pas en gras
+                    letterSpacing: 1.2, // Optionnel pour améliorer la lisibilité
                   ),
+
                 ),
                 SizedBox(height: 40),
                 Form(
@@ -125,29 +143,43 @@ class _SignInScreenState extends State<SignInScreen> {
                         },
                       ),
                       SizedBox(height: 16),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: true, // Correct usage of obscureText
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                          labelStyle: TextStyle(color: Colors.grey),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Color(0xFF00BCD0)),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Password is required';
-                          } else if (value.length < 8) {
-                            return 'Password must be at least 8 characters long';
-                          }
-                          return null;
-                        },
+
+
+                  TextFormField(
+                  controller: _passwordController,
+                  obscureText: _isObscured, // Gère la visibilité du texte
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    labelStyle: TextStyle(color: Colors.grey),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFF00BCD0)),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isObscured ? Icons.visibility_off : Icons.visibility,
+                        color: Color(0xFF00BCD0),
                       ),
-                    ],
+                      onPressed: () {
+                        setState(() {
+                          _isObscured = !_isObscured;
+                        });
+                      },
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Password is required';
+                    } else if (value.length < 8) {
+                      return 'Password must be at least 8 characters long';
+                    }
+                    return null;
+                  },
+                ),
+
+              ],
                   ),
                 ),
                 SizedBox(height: 24),

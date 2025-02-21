@@ -301,7 +301,7 @@ class _ServicePageState extends State<ServicePage> {
                                         color: Colors.green),
                                     SizedBox(width: 8),
                                     Text(
-                                      "${service.duree} min",
+                                      "${service.duree} ",
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500,
@@ -316,12 +316,15 @@ class _ServicePageState extends State<ServicePage> {
                                         color: Colors.red),
                                     SizedBox(width: 8),
                                     Text(
-                                      "${service.prix.toStringAsFixed(2)} DT",
+                                      service.prix == service.prix.toInt()
+                                          ? '${service.prix.toInt()} DT'
+                                          : '${service.prix.toStringAsFixed(2)} DT',
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
+
                                   ],
                                 ),
                                 SizedBox(height: 16),
